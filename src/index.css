@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  src: local('Jameel Noori Nastaleeq'),
+       local('JameelNooriNastaliq'),
+       local('Jameel Noori Nastaleeq Regular'),
+       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JameelNooriNastaliq';
+  src: local('Jameel Noori Nastaleeq'),
+       local('JameelNooriNastaliq'),
+       local('Jameel Noori Nastaleeq Regular'),
+       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer utilities {
+  .font-nastaleeq {
+    font-family: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
+  }
+  .font-arabic {
+    font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
+  }
+  .font-urdu {
+    font-family: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
+  }
+  .font-sans-custom {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 150, 160, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 150, 160, 0.45);
+}

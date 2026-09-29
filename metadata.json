@@ -1,0 +1,6 @@
+{
+  "name": "مکتبہ سلیمانیہ",
+  "description": "مکتبہ سلیمانیہ - Digital Islamic Library and Google NotebookLM AI research knowledge bases featuring 84 specialized notebooks, 14,700+ classical and contemporary volumes, global search, and interactive book explorer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

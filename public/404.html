@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>مکتبہ سلیمانیہ | Maktaba Sulaimaniyah</title>
+    <script>
+      (function() {
+        var path = window.location.pathname;
+        var repoName = '/junidemaktabah/';
+        if (path.indexOf(repoName) === 0) {
+          window.location.replace(repoName + (window.location.search || '') + (window.location.hash || ''));
+        } else {
+          window.location.replace('/' + (window.location.search || '') + (window.location.hash || ''));
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to Maktaba Sulaimaniyah...</p>
+  </body>
+</html>
