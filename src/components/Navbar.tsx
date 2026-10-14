@@ -10,7 +10,6 @@ import {
   FolderTree, 
   Library, 
   X,
-  ExternalLink,
   ChevronDown
 } from 'lucide-react';
 import { ThemeConfig, ViewMode } from '../types';
@@ -203,7 +202,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="favorites-toggle-btn"
               onClick={onOpenFavorites}
-              className="relative p-2 rounded-lg border transition-all duration-150 cursor-pointer hover:opacity-90 flex items-center gap-1 text-xs"
+              className="relative h-9 px-2.5 rounded-lg border transition-all duration-150 cursor-pointer hover:opacity-90 flex items-center justify-center gap-1 text-xs shrink-0"
               style={{ 
                 backgroundColor: currentTheme.surfaceSecondary,
                 borderColor: currentTheme.border,
@@ -211,7 +210,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               title={t('favoritesTitle')}
             >
-              <Bookmark className="w-4 h-4" style={{ color: favoritesCount > 0 ? currentTheme.accent : currentTheme.textMuted }} />
+              <Bookmark className="w-4 h-4 shrink-0" style={{ color: favoritesCount > 0 ? currentTheme.accent : currentTheme.textMuted }} />
               {favoritesCount > 0 && (
                 <span 
                   className="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
@@ -223,11 +222,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {/* Theme Picker Dropdown */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 id="theme-picker-btn"
                 onClick={() => setShowThemePicker(!showThemePicker)}
-                className="p-2 rounded-lg border transition-all duration-150 cursor-pointer flex items-center gap-1"
+                className="h-9 px-2 sm:px-2.5 rounded-lg border transition-all duration-150 cursor-pointer flex items-center justify-center gap-1"
                 style={{ 
                   backgroundColor: currentTheme.surfaceSecondary,
                   borderColor: currentTheme.border,
@@ -235,8 +234,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 title={t('themePickerTitle')}
               >
-                <Palette className="w-4 h-4" style={{ color: currentTheme.accent }} />
-                <ChevronDown className="w-3 h-3 opacity-60" />
+                <Palette className="w-4 h-4 shrink-0" style={{ color: currentTheme.accent }} />
+                <ChevronDown className="w-3 h-3 opacity-60 shrink-0" />
               </button>
 
               {showThemePicker && (
@@ -300,7 +299,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="how-to-build-btn"
               onClick={onOpenGuide}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-lg border font-medium text-xs flex items-center gap-1.5 transition-all duration-150 cursor-pointer shadow-xs"
+              className="h-9 px-2.5 sm:px-3 rounded-lg border font-medium text-xs flex items-center gap-1.5 transition-all duration-150 cursor-pointer shadow-xs hover:opacity-90"
               style={{ 
                 backgroundColor: currentTheme.surfaceSecondary,
                 borderColor: currentTheme.accent,
@@ -308,7 +307,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               title={t('howItWorks')}
             >
-              <HelpCircle className="w-4 h-4" />
+              <HelpCircle className="w-4 h-4 shrink-0" />
               <span className="hidden sm:inline">{t('howItWorks')}</span>
             </button>
 
@@ -316,11 +315,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="add-notebook-btn"
               onClick={onOpenAddModal}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-lg font-medium text-xs flex items-center gap-1.5 text-white transition-all duration-150 cursor-pointer shadow-sm"
+              className="h-9 px-2.5 sm:px-3 rounded-lg font-medium text-xs flex items-center gap-1.5 text-white transition-all duration-150 cursor-pointer shadow-sm hover:opacity-90 active:scale-98"
               style={{ backgroundColor: currentTheme.primary }}
               title={t('addHub')}
             >
-              <PlusCircle className="w-4 h-4" />
+              <PlusCircle className="w-4 h-4 shrink-0" />
               <span className="hidden sm:inline">{t('addHub')}</span>
             </button>
 

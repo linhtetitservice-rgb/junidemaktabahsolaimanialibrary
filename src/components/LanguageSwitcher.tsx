@@ -72,7 +72,7 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
       <button
         id="language-switcher-btn"
         onClick={() => setIsOpen(!isOpen)}
-        className="px-2.5 py-2 rounded-lg border transition-all duration-150 cursor-pointer flex items-center gap-1.5 text-xs font-semibold hover:opacity-90 shadow-xs"
+        className="h-9 px-2.5 rounded-lg border transition-all duration-150 cursor-pointer flex items-center gap-1.5 text-xs font-semibold hover:opacity-90 shadow-xs shrink-0"
         style={{ 
           backgroundColor: currentTheme.surfaceSecondary,
           borderColor: isOpen ? currentTheme.accent : currentTheme.border,

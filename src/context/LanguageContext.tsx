@@ -149,7 +149,24 @@ export const TRANSLATIONS = {
     timeJustNow: 'Just now',
     timeMinutesAgo: '{min}m ago',
     timeHoursAgo: '{hours}h ago',
-    timeDaysAgo: '{days}d ago'
+    timeDaysAgo: '{days}d ago',
+
+    // Corner AI Portals
+    aiPortalsCornerTitle: 'Islamic AI Portals',
+    aiPortalsCornerBadge: 'AI Tools',
+    aiPortalsCornerSubtitle: 'Quick access to Al-Ikhlas & Darul Ifta AI search',
+    alIkhlasTitle: 'Al-Ikhlas Online AI',
+    alIkhlasTag: 'AI Research Assistant',
+    alIkhlasDesc: 'Interactive Islamic AI portal for research, answers, and scholarly reference.',
+    darulIftaTitle: 'Darul Ifta AI Search',
+    darulIftaTag: 'Fatwa & Fiqh Search',
+    darulIftaDesc: 'Specialized AI search engine for Islamic rulings, Fatwa, and authoritative jurisprudence.',
+    openPortal: 'Launch Portal',
+    copiedTooltip: 'Copied to clipboard!',
+    copyLinkTooltip: 'Copy URL',
+    dockCornerTooltip: 'Switch corner position',
+    minimizeCornerTooltip: 'Minimize',
+    expandCornerTooltip: 'Expand AI Portals'
   },
   ar: {
     // Brand & Top Navigation
@@ -284,7 +301,24 @@ export const TRANSLATIONS = {
     timeJustNow: 'الآن',
     timeMinutesAgo: 'منذ {min} د',
     timeHoursAgo: 'منذ {hours} س',
-    timeDaysAgo: 'منذ {days} يوم'
+    timeDaysAgo: 'منذ {days} يوم',
+
+    // Corner AI Portals
+    aiPortalsCornerTitle: 'بوابات الذكاء الاصطناعي الإسلامية',
+    aiPortalsCornerBadge: 'أدوات ذكية',
+    aiPortalsCornerSubtitle: 'وصول سريع إلى الإخلاص أونلاين وبحث دار الإفتاء بالذكاء الاصطناعي',
+    alIkhlasTitle: 'الإخلاص أونلاين للذكاء الاصطناعي',
+    alIkhlasTag: 'مساعد بحث إسلامي',
+    alIkhlasDesc: 'بوابة إسلامية ذكية تفاعلية للبحث العلمي والإجابات الشرعية الموثقة.',
+    darulIftaTitle: 'دار الإفتاء للبحث بالذكاء الاصطناعي',
+    darulIftaTag: 'بحث الفتاوى والأحكام',
+    darulIftaDesc: 'محرك بحث متطور بالذكاء الاصطناعي للفتاوى والأحكام الفقهية والمصادر المعتمدة.',
+    openPortal: 'فتح البوابة',
+    copiedTooltip: 'تم النسخ إلى الحافظة!',
+    copyLinkTooltip: 'نسخ الرابط',
+    dockCornerTooltip: 'تبديل موضع الزاوية',
+    minimizeCornerTooltip: 'تصغير',
+    expandCornerTooltip: 'توسيع بوابات الذكاء الاصطناعي'
   },
   ur: {
     // Brand & Top Navigation
@@ -419,7 +453,24 @@ export const TRANSLATIONS = {
     timeJustNow: 'ابھی',
     timeMinutesAgo: '{min} منٹ پہلے',
     timeHoursAgo: '{hours} گھنٹے پہلے',
-    timeDaysAgo: '{days} دن پہلے'
+    timeDaysAgo: '{days} دن پہلے',
+
+    // Corner AI Portals
+    aiPortalsCornerTitle: 'اسلامک اے آئی پورٹلز',
+    aiPortalsCornerBadge: 'اے آئی ٹولز',
+    aiPortalsCornerSubtitle: 'الاحلاص آن لائن اور دار الافتاء اے آئی سرچ تک فوری رسائی',
+    alIkhlasTitle: 'الاحلاص آن لائن AI',
+    alIkhlasTag: 'اے آئی ریسرچ اسسٹنٹ',
+    alIkhlasDesc: 'اسلامی تحقیقی سوال و جواب اور علمی معاونت کا اسمارٹ پورٹل۔',
+    darulIftaTitle: 'دار الافتاء AI سرچ',
+    darulIftaTag: 'فتاویٰ و فقہی تلاش',
+    darulIftaDesc: 'فتاویٰ، فقہی احکام اور معتبر اسلامی مصادر کا جدید اے آئی سرچ انجن۔',
+    openPortal: 'پورٹل کھولیں',
+    copiedTooltip: 'لنک کاپی ہو گیا!',
+    copyLinkTooltip: 'لنک کاپی کریں',
+    dockCornerTooltip: 'کونا تبدیل کریں',
+    minimizeCornerTooltip: 'چھوٹا کریں',
+    expandCornerTooltip: 'اے آئی پورٹلز کھولیں'
   }
 };
 

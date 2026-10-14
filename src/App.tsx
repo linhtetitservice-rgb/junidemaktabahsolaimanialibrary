@@ -9,6 +9,7 @@ import { FavoritesDrawer } from './components/FavoritesDrawer';
 import { DeveloperGuideModal } from './components/DeveloperGuideModal';
 import { AddNotebookModal } from './components/AddNotebookModal';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
+import { CornerAIPortals } from './components/CornerAIPortals';
 import { SEED_NOTEBOOKS } from './data/seedNotebooks';
 import { THEMES } from './theme/themes';
 import { Notebook, ThemeConfig, ViewMode, LanguageFilter } from './types';
@@ -248,7 +249,7 @@ export default function App() {
   return (
     <div 
       id="app-root" 
-      className="min-h-screen flex flex-col font-sans-custom transition-colors duration-200"
+      className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col font-sans-custom transition-colors duration-200"
       style={{ 
         backgroundColor: currentTheme.bg,
         color: currentTheme.text 
@@ -475,32 +476,64 @@ export default function App() {
           color: currentTheme.textMuted 
         }}
       >
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 flex-wrap justify-center md:justify-start">
             <span className="font-normal font-nastaleeq text-lg" style={{ color: currentTheme.text }}>
               {t('footerTitle')}
             </span>
-            <span>•</span>
-            <span>{t('footerDesc')}</span>
+            <span className="opacity-40 hidden sm:inline">•</span>
+            <span className="text-center sm:text-left">{t('footerDesc')}</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center md:justify-end text-xs">
+            <a 
+              href="https://alikhlasonline.ai/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-2.5 py-1 rounded-md border hover:opacity-80 transition-all flex items-center gap-1.5 font-medium"
+              style={{ 
+                backgroundColor: currentTheme.surfaceSecondary,
+                borderColor: currentTheme.border,
+                color: currentTheme.text 
+              }}
+              title="Al-Ikhlas Online AI"
+            >
+              <Sparkles className="w-3 h-3 text-emerald-500" />
+              <span>Al-Ikhlas AI</span>
+            </a>
+
+            <a 
+              href="https://www.darulifta.info/ai-search" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-2.5 py-1 rounded-md border hover:opacity-80 transition-all flex items-center gap-1.5 font-medium"
+              style={{ 
+                backgroundColor: currentTheme.surfaceSecondary,
+                borderColor: currentTheme.border,
+                color: currentTheme.text 
+              }}
+              title="Darul Ifta AI Search"
+            >
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              <span>Darul Ifta AI</span>
+            </a>
+
             <button
               onClick={() => setIsGuideOpen(true)}
-              className="font-medium hover:underline cursor-pointer"
+              className="px-2 py-1 rounded-md hover:underline cursor-pointer font-medium"
               style={{ color: currentTheme.accent }}
             >
               {t('howItWasBuiltFooter')}
             </button>
-            <span>•</span>
+
             <a 
               href="https://notebooklm.google.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="hover:underline flex items-center gap-1"
+              className="px-2 py-1 rounded-md hover:underline flex items-center gap-1 opacity-80"
             >
               <span>{t('poweredByGoogle')}</span>
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-3 h-3 text-amber-400" />
             </a>
           </div>
         </div>
@@ -543,6 +576,9 @@ export default function App() {
         allNotebooks={notebooks}
         onImportNotebooks={handleImportNotebooks}
       />
+
+      {/* Floating Corner AI Portals Widget: Al-Ikhlas Online AI & Darul Ifta AI Search */}
+      <CornerAIPortals currentTheme={currentTheme} />
 
     </div>
   );
