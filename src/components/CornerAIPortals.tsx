@@ -5,10 +5,10 @@ import {
   Copy, 
   Check, 
   ChevronDown, 
-  ChevronUp, 
   Compass, 
-  Search,
-  X,
+  Search, 
+  HelpCircle, 
+  X, 
   Info
 } from 'lucide-react';
 import { ThemeConfig } from '../types';
@@ -25,9 +25,9 @@ interface AIPortalItem {
   nativeNameAr: string;
   nativeNameUr: string;
   url: string;
-  badgeKey: 'alIkhlasTag' | 'darulIftaTag';
-  descKey: 'alIkhlasDesc' | 'darulIftaDesc';
-  icon: 'compass' | 'search';
+  badgeKey: 'alIkhlasTag' | 'darulIftaTag' | 'fatwaQaTag';
+  descKey: 'alIkhlasDesc' | 'darulIftaDesc' | 'fatwaQaDesc';
+  icon: 'compass' | 'search' | 'help';
 }
 
 const AI_PORTALS: AIPortalItem[] = [
@@ -52,6 +52,17 @@ const AI_PORTALS: AIPortalItem[] = [
     badgeKey: 'darulIftaTag',
     descKey: 'darulIftaDesc',
     icon: 'search'
+  },
+  {
+    id: 'fatwa-qa-ai',
+    name: 'FatwaQA AI Search',
+    shortName: 'FatwaQA AI',
+    nativeNameAr: 'فتاوى QA AI',
+    nativeNameUr: 'فتاویٰ سوال و جواب AI',
+    url: 'https://www.fatwaqa.com/ur/ai-search',
+    badgeKey: 'fatwaQaTag',
+    descKey: 'fatwaQaDesc',
+    icon: 'help'
   }
 ];
 
@@ -77,6 +88,17 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
     if (language === 'ar') return portal.nativeNameAr;
     if (language === 'ur') return portal.nativeNameUr;
     return portal.shortName;
+  };
+
+  const renderPortalIcon = (icon: AIPortalItem['icon'], className: string = "w-3.5 h-3.5") => {
+    switch (icon) {
+      case 'compass':
+        return <Compass className={`${className} text-emerald-500 shrink-0`} />;
+      case 'search':
+        return <Search className={`${className} text-amber-500 shrink-0`} />;
+      case 'help':
+        return <HelpCircle className={`${className} text-sky-500 shrink-0`} />;
+    }
   };
 
   return (
@@ -110,7 +132,7 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
             className="w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white shrink-0"
             style={{ backgroundColor: currentTheme.accent }}
           >
-            2
+            {AI_PORTALS.length}
           </span>
         </button>
       )}
@@ -118,7 +140,7 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
       {/* 2. Dock View (Compact, perfectly aligned corner dock bar) */}
       {viewMode === 'dock' && (
         <div 
-          className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-xl sm:rounded-2xl shadow-xl border backdrop-blur-md max-w-full"
+          className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl shadow-xl border backdrop-blur-md max-w-full overflow-hidden"
           style={{ 
             backgroundColor: currentTheme.surface, 
             borderColor: currentTheme.accent,
@@ -129,7 +151,7 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
           <button
             type="button"
             onClick={() => setViewMode('expanded')}
-            className="px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-opacity hover:opacity-80 shrink-0 cursor-pointer"
+            className="px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 transition-opacity hover:opacity-80 shrink-0 cursor-pointer"
             style={{ 
               backgroundColor: currentTheme.surfaceSecondary,
               color: currentTheme.accent
@@ -137,51 +159,36 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
             title={t('aiPortalsCornerSubtitle')}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
-            <span className="hidden xs:inline sm:inline text-[11px]">
+            <span className="hidden md:inline text-[11px]">
               {language === 'ar' ? 'ذكاء اصطناعي' : language === 'ur' ? 'اسلامک AI' : 'Islamic AI'}
             </span>
             <Info className="w-3 h-3 opacity-60" />
           </button>
 
-          {/* Link 1: Al-Ikhlas Online AI */}
-          <a
-            href="https://alikhlasonline.ai/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-8 px-2.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-all hover:brightness-105 active:scale-98 shrink-0 shadow-xs"
-            style={{ 
-              backgroundColor: currentTheme.surfaceSecondary,
-              borderColor: currentTheme.border,
-              color: currentTheme.text
-            }}
-            title="Al-Ikhlas Online AI - Islamic Research Assistant"
-          >
-            <Compass className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            <span className="font-semibold text-[11px] sm:text-xs">
-              {getPortalLabel(AI_PORTALS[0])}
-            </span>
-            <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
-          </a>
-
-          {/* Link 2: Darul Ifta AI Search */}
-          <a
-            href="https://www.darulifta.info/ai-search"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-8 px-2.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-all hover:brightness-105 active:scale-98 shrink-0 shadow-xs"
-            style={{ 
-              backgroundColor: currentTheme.surfaceSecondary,
-              borderColor: currentTheme.border,
-              color: currentTheme.text
-            }}
-            title="Darul Ifta AI Search - Fatwa & Fiqh Search Engine"
-          >
-            <Search className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-            <span className="font-semibold text-[11px] sm:text-xs">
-              {getPortalLabel(AI_PORTALS[1])}
-            </span>
-            <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
-          </a>
+          {/* AI Portals Links */}
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-[calc(100vw-8rem)] sm:max-w-none">
+            {AI_PORTALS.map((portal) => (
+              <a
+                key={portal.id}
+                href={portal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-8 px-2 sm:px-2.5 rounded-lg border text-xs font-medium flex items-center gap-1 sm:gap-1.5 transition-all hover:brightness-105 active:scale-98 shrink-0 shadow-xs"
+                style={{ 
+                  backgroundColor: currentTheme.surfaceSecondary,
+                  borderColor: currentTheme.border,
+                  color: currentTheme.text
+                }}
+                title={portal.name}
+              >
+                {renderPortalIcon(portal.icon, "w-3.5 h-3.5")}
+                <span className="font-semibold text-[11px] sm:text-xs whitespace-nowrap">
+                  {getPortalLabel(portal)}
+                </span>
+                <ExternalLink className="w-3 h-3 opacity-60 shrink-0" />
+              </a>
+            ))}
+          </div>
 
           {/* Minimize Button */}
           <button
@@ -244,10 +251,9 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
           </div>
 
           {/* Cards */}
-          <div className="p-3 space-y-2">
+          <div className="p-3 space-y-2 max-h-[65vh] overflow-y-auto">
             {AI_PORTALS.map((portal) => {
               const isCopied = copiedId === portal.id;
-              const isIkhlas = portal.id === 'al-ikhlas-ai';
 
               return (
                 <div 
@@ -267,11 +273,7 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
                           borderColor: currentTheme.border
                         }}
                       >
-                        {isIkhlas ? (
-                          <Compass className="w-3.5 h-3.5 text-emerald-500" />
-                        ) : (
-                          <Search className="w-3.5 h-3.5 text-amber-500" />
-                        )}
+                        {renderPortalIcon(portal.icon, "w-3.5 h-3.5")}
                       </div>
                       <div>
                         <h4 className="font-bold text-xs leading-snug" style={{ color: currentTheme.text }}>

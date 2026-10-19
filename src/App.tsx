@@ -518,6 +518,22 @@ export default function App() {
               <span>Darul Ifta AI</span>
             </a>
 
+            <a 
+              href="https://www.fatwaqa.com/ur/ai-search" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-2.5 py-1 rounded-md border hover:opacity-80 transition-all flex items-center gap-1.5 font-medium"
+              style={{ 
+                backgroundColor: currentTheme.surfaceSecondary,
+                borderColor: currentTheme.border,
+                color: currentTheme.text 
+              }}
+              title="FatwaQA AI Search"
+            >
+              <Sparkles className="w-3 h-3 text-sky-500" />
+              <span>FatwaQA AI</span>
+            </a>
+
             <button
               onClick={() => setIsGuideOpen(true)}
               className="px-2 py-1 rounded-md hover:underline cursor-pointer font-medium"
