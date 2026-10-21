@@ -8,6 +8,7 @@ import {
   Compass, 
   Search, 
   HelpCircle, 
+  BookOpen,
   X, 
   Info
 } from 'lucide-react';
@@ -25,9 +26,9 @@ interface AIPortalItem {
   nativeNameAr: string;
   nativeNameUr: string;
   url: string;
-  badgeKey: 'alIkhlasTag' | 'darulIftaTag' | 'fatwaQaTag';
-  descKey: 'alIkhlasDesc' | 'darulIftaDesc' | 'fatwaQaDesc';
-  icon: 'compass' | 'search' | 'help';
+  badgeKey: 'alIkhlasTag' | 'darulIftaTag' | 'fatwaQaTag' | 'shamelaTag';
+  descKey: 'alIkhlasDesc' | 'darulIftaDesc' | 'fatwaQaDesc' | 'shamelaDesc';
+  icon: 'compass' | 'search' | 'help' | 'book';
 }
 
 const AI_PORTALS: AIPortalItem[] = [
@@ -63,6 +64,17 @@ const AI_PORTALS: AIPortalItem[] = [
     badgeKey: 'fatwaQaTag',
     descKey: 'fatwaQaDesc',
     icon: 'help'
+  },
+  {
+    id: 'shamela-ai',
+    name: 'Shamela AI (المكتبة الشاملة)',
+    shortName: 'Shamela AI',
+    nativeNameAr: 'الشاملة AI',
+    nativeNameUr: 'مکتبہ شاملہ AI',
+    url: 'https://shamela.ws/ai',
+    badgeKey: 'shamelaTag',
+    descKey: 'shamelaDesc',
+    icon: 'book'
   }
 ];
 
@@ -98,6 +110,8 @@ export const CornerAIPortals: React.FC<CornerAIPortalsProps> = ({ currentTheme }
         return <Search className={`${className} text-amber-500 shrink-0`} />;
       case 'help':
         return <HelpCircle className={`${className} text-sky-500 shrink-0`} />;
+      case 'book':
+        return <BookOpen className={`${className} text-teal-500 shrink-0`} />;
     }
   };
 

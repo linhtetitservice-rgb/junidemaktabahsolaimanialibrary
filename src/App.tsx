@@ -534,6 +534,22 @@ export default function App() {
               <span>FatwaQA AI</span>
             </a>
 
+            <a 
+              href="https://shamela.ws/ai" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="px-2.5 py-1 rounded-md border hover:opacity-80 transition-all flex items-center gap-1.5 font-medium"
+              style={{ 
+                backgroundColor: currentTheme.surfaceSecondary,
+                borderColor: currentTheme.border,
+                color: currentTheme.text 
+              }}
+              title="Shamela AI Search (المكتبة الشاملة)"
+            >
+              <Sparkles className="w-3 h-3 text-teal-400" />
+              <span>Shamela AI</span>
+            </a>
+
             <button
               onClick={() => setIsGuideOpen(true)}
               className="px-2 py-1 rounded-md hover:underline cursor-pointer font-medium"
