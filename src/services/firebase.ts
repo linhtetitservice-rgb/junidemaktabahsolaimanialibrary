@@ -430,7 +430,15 @@ export async function deleteGlobalNotebook(notebookId: string): Promise<void> {
   const path = `notebooks/${safeId}`;
   try {
     const docRef = doc(db, 'notebooks', safeId);
-    await deleteDoc(docRef);
+    // Set visible: false so it is removed from the catalog even if it is in the base static JSON
+    await setDoc(docRef, {
+      id: safeId,
+      title: '[Deleted Hub]',
+      link: 'https://deleted.invalid',
+      cat: 'Deleted',
+      visible: false,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
   }

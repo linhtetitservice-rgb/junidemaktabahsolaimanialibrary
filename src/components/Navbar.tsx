@@ -16,7 +16,8 @@ import {
   User as UserIcon,
   Cloud,
   Loader2,
-  ShieldCheck
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 import { ThemeConfig, ViewMode } from '../types';
 import { THEMES } from '../theme/themes';
@@ -257,7 +258,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   />
                   <div 
                     id="theme-dropdown-menu"
-                    className={`absolute mt-2 w-56 rounded-xl border shadow-xl z-50 p-2 text-xs ${
+                    className={`absolute mt-2 w-72 sm:w-80 rounded-2xl border shadow-2xl z-50 p-2.5 text-xs ${
                       isRTL ? 'left-0' : 'right-0'
                     }`}
                     style={{ 
@@ -265,10 +266,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                       borderColor: currentTheme.border 
                     }}
                   >
-                    <div className="px-2 py-1.5 font-semibold text-xs border-b mb-1" style={{ borderColor: currentTheme.border, color: currentTheme.textMuted }}>
-                      {t('selectTheme')}
+                    <div className="px-2.5 py-2 font-bold text-xs border-b mb-1 flex items-center justify-between" style={{ borderColor: currentTheme.border, color: currentTheme.text }}>
+                      <span>{t('selectTheme')}</span>
+                      <span className="text-[10px] font-normal opacity-70">12 Presets</span>
                     </div>
-                    <div className="space-y-1 max-h-64 overflow-y-auto">
+                    <div className="space-y-1 max-h-72 overflow-y-auto pr-1">
                       {THEMES.map((tItem) => (
                         <button
                           key={tItem.id}
@@ -277,27 +279,39 @@ export const Navbar: React.FC<NavbarProps> = ({
                             onThemeSelect(tItem);
                             setShowThemePicker(false);
                           }}
-                          className={`w-full text-left px-2.5 py-2 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                            currentTheme.id === tItem.id ? 'font-semibold' : 'hover:opacity-80'
+                          className={`w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between transition-all cursor-pointer ${
+                            currentTheme.id === tItem.id ? 'font-bold shadow-xs' : 'hover:opacity-85'
                           }`}
                           style={{ 
                             backgroundColor: currentTheme.id === tItem.id ? currentTheme.surfaceSecondary : 'transparent',
                             color: currentTheme.text 
                           }}
                         >
-                          <div className="flex items-center gap-2">
-                            <span 
-                              className="w-3.5 h-3.5 rounded-full border"
-                              style={{ backgroundColor: tItem.primary, borderColor: tItem.accent }}
-                            />
-                            <span>{tItem.name}</span>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            {/* Dual Color Swatch Dot: background & primary/accent */}
+                            <div className="flex items-center -space-x-1 shrink-0">
+                              <span 
+                                className="w-4 h-4 rounded-full border shadow-2xs"
+                                style={{ backgroundColor: tItem.bg, borderColor: tItem.border }}
+                              />
+                              <span 
+                                className="w-4 h-4 rounded-full border shadow-2xs"
+                                style={{ backgroundColor: tItem.primary, borderColor: tItem.accent }}
+                              />
+                            </div>
+                            <span className="truncate text-xs">{tItem.name}</span>
                           </div>
-                          <span 
-                            className="text-[10px] px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: currentTheme.border, color: currentTheme.textMuted }}
-                          >
-                            {tItem.mode}
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                            <span 
+                              className="text-[10px] px-1.5 py-0.5 rounded capitalize font-medium"
+                              style={{ backgroundColor: currentTheme.border, color: currentTheme.textMuted }}
+                            >
+                              {tItem.mode}
+                            </span>
+                            {currentTheme.id === tItem.id && (
+                              <Check className="w-3.5 h-3.5 text-emerald-500" />
+                            )}
+                          </div>
                         </button>
                       ))}
                     </div>

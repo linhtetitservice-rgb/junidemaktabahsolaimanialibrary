@@ -1,6 +1,103 @@
 import { ThemeConfig } from '../types';
 
 export const THEMES: ThemeConfig[] = [
+  // 1. Screenshot 1: Black + Deep Emerald Green (အမဲနဲ့ အစိမ်းအရင့်) - Zia ul Islam Style
+  {
+    id: 'zia-black-emerald',
+    name: 'Zia Black & Deep Green (အမဲ + အစိမ်းအရင့်)',
+    mode: 'dark',
+    bg: '#000000',
+    surface: '#0c140f',
+    surfaceSecondary: '#132219',
+    border: '#1e3b2b',
+    primary: '#16a34a',
+    primaryHover: '#22c55e',
+    accent: '#4ade80',
+    text: '#ffffff',
+    textMuted: '#86efac',
+    cardBg: '#0f1c14'
+  },
+  // 2. Screenshot 5: White + Deep Green / Sage Mint (အဖြူနဲ့ အစိမ်းအရင့်)
+  {
+    id: 'zia-white-emerald',
+    name: 'White & Deep Green (အဖြူ + အစိမ်းအရင့်)',
+    mode: 'light',
+    bg: '#f6fbf7',
+    surface: '#e8f7ee',
+    surfaceSecondary: '#d7f1e1',
+    border: '#a7e3bf',
+    primary: '#16a34a',
+    primaryHover: '#15803d',
+    accent: '#15803d',
+    text: '#052e16',
+    textMuted: '#166534',
+    cardBg: '#e8f7ee'
+  },
+  // 3. Screenshot 3: Deep Forest Dark / Neon Pine (စိမ်းရင့်နက် + နီယွန်)
+  {
+    id: 'forest-xray-dark',
+    name: 'Deep Forest Dark (စိမ်းရင့်နက် + နီယွန်)',
+    mode: 'dark',
+    bg: '#05120a',
+    surface: '#0a1f13',
+    surfaceSecondary: '#102d1d',
+    border: '#17442a',
+    primary: '#00e676',
+    primaryHover: '#10b981',
+    accent: '#00e676',
+    text: '#f0fdf4',
+    textMuted: '#6ee7b7',
+    cardBg: '#0a2114'
+  },
+  // 4. Screenshot 2: Obsidian Pitch Black + Crimson Red (အမဲ + အနီရောင်)
+  {
+    id: 'zia-black-crimson',
+    name: 'Zia Black & Crimson (အမဲ + အနီရောင်)',
+    mode: 'dark',
+    bg: '#000000',
+    surface: '#140d0d',
+    surfaceSecondary: '#221212',
+    border: '#3d1c1c',
+    primary: '#dc2626',
+    primaryHover: '#ef4444',
+    accent: '#f87171',
+    text: '#ffffff',
+    textMuted: '#fca5a5',
+    cardBg: '#160e0e'
+  },
+  // 5. Screenshot 4: Obsidian Black + Warm Amber Orange (အမဲ + လိမ္မော်ရောင်)
+  {
+    id: 'zia-black-amber',
+    name: 'Zia Black & Warm Amber (အမဲ + လိမ္မော်ရောင်)',
+    mode: 'dark',
+    bg: '#000000',
+    surface: '#14110e',
+    surfaceSecondary: '#241b13',
+    border: '#442b1a',
+    primary: '#ea580c',
+    primaryHover: '#f97316',
+    accent: '#fb923c',
+    text: '#ffffff',
+    textMuted: '#fdba74',
+    cardBg: '#17130f'
+  },
+  // 6. Screenshot 6: Rose Pastel + Crimson Coral (ပန်းနုဖျော့ + အနီရောင်)
+  {
+    id: 'zia-rose-pastel',
+    name: 'Rose Pastel & Crimson (ပန်းနုဖျော့ + အနီရောင်)',
+    mode: 'light',
+    bg: '#fff8f8',
+    surface: '#fde8ea',
+    surfaceSecondary: '#fcd5d9',
+    border: '#f8a5ad',
+    primary: '#dc2626',
+    primaryHover: '#b91c1c',
+    accent: '#e11d48',
+    text: '#4c0519',
+    textMuted: '#9f1239',
+    cardBg: '#fde8ea'
+  },
+  // Classical heritage presets
   {
     id: 'emerald-night',
     name: 'Emerald Night (زمرد لیل)',
@@ -15,36 +112,6 @@ export const THEMES: ThemeConfig[] = [
     text: '#f0f6f2',
     textMuted: '#94aba0',
     cardBg: '#13241a'
-  },
-  {
-    id: 'lapis-dawn',
-    name: 'Lapis Dawn (لازورد فجر)',
-    mode: 'dark',
-    bg: '#0a0f1d',
-    surface: '#11182c',
-    surfaceSecondary: '#19233f',
-    border: '#24335a',
-    primary: '#2e5ec4',
-    primaryHover: '#3b71e8',
-    accent: '#e6a13d',
-    text: '#f0f4fc',
-    textMuted: '#96a6c9',
-    cardBg: '#131c34'
-  },
-  {
-    id: 'amethyst-dusk',
-    name: 'Amethyst Dusk (جمشت غسق)',
-    mode: 'dark',
-    bg: '#110a1c',
-    surface: '#1c122c',
-    surfaceSecondary: '#271b3d',
-    border: '#3c295c',
-    primary: '#7747c4',
-    primaryHover: '#8b59e0',
-    accent: '#d9a941',
-    text: '#f5effc',
-    textMuted: '#a797be',
-    cardBg: '#1e1430'
   },
   {
     id: 'pearl-light',
@@ -62,6 +129,21 @@ export const THEMES: ThemeConfig[] = [
     cardBg: '#ffffff'
   },
   {
+    id: 'lapis-dawn',
+    name: 'Lapis Dawn (لازورد فجر)',
+    mode: 'dark',
+    bg: '#0a0f1d',
+    surface: '#11182c',
+    surfaceSecondary: '#19233f',
+    border: '#24335a',
+    primary: '#2e5ec4',
+    primaryHover: '#3b71e8',
+    accent: '#e6a13d',
+    text: '#f0f4fc',
+    textMuted: '#96a6c9',
+    cardBg: '#131c34'
+  },
+  {
     id: 'desert-sand',
     name: 'Desert Sand (رمال الصحراء)',
     mode: 'light',
@@ -75,6 +157,21 @@ export const THEMES: ThemeConfig[] = [
     text: '#2b2318',
     textMuted: '#6e6252',
     cardBg: '#ffffff'
+  },
+  {
+    id: 'amethyst-dusk',
+    name: 'Amethyst Dusk (جمشت غسق)',
+    mode: 'dark',
+    bg: '#110a1c',
+    surface: '#1c122c',
+    surfaceSecondary: '#271b3d',
+    border: '#3c295c',
+    primary: '#7747c4',
+    primaryHover: '#8b59e0',
+    accent: '#d9a941',
+    text: '#f5effc',
+    textMuted: '#a797be',
+    cardBg: '#1e1430'
   },
   {
     id: 'sky-light',

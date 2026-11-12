@@ -16,13 +16,15 @@ import { THEMES } from './theme/themes';
 import { Notebook, ThemeConfig, ViewMode, LanguageFilter } from './types';
 import { useLanguage } from './context/LanguageContext';
 import { useAuth } from './context/AuthContext';
+import { mergeCatalogs } from './utils/catalogMerger';
 import { 
   syncFavoriteToCloud, 
   removeFavoriteFromCloud, 
   fetchFavoritesFromCloud, 
   syncCustomNotebookToCloud, 
   fetchCustomNotebooksFromCloud,
-  subscribeToGlobalCatalog
+  subscribeToGlobalCatalog,
+  saveGlobalNotebook
 } from './services/firebase';
 import { 
   BookOpen, 
@@ -56,9 +58,18 @@ export default function App() {
     return THEMES[0]; // Emerald Night
   });
 
-  // Notebooks state
-  const [notebooks, setNotebooks] = useState<Notebook[]>(SEED_NOTEBOOKS);
+  // Base static catalog loaded from JSON (87 hubs, 14,713 books)
+  const [baseNotebooks, setBaseNotebooks] = useState<Notebook[]>(SEED_NOTEBOOKS);
+  // Live global changes from Firestore (/notebooks)
+  const [cloudNotebooks, setCloudNotebooks] = useState<Notebook[]>([]);
+  // Personal custom notebooks created by current authenticated user
+  const [userCustomNotebooks, setUserCustomNotebooks] = useState<Notebook[]>([]);
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
+
+  // Merged Master Catalog: NEVER loses base books, seamlessly integrates real-time cloud updates!
+  const notebooks = useMemo(() => {
+    return mergeCatalogs(baseNotebooks, cloudNotebooks, userCustomNotebooks);
+  }, [baseNotebooks, cloudNotebooks, userCustomNotebooks]);
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState('');
@@ -103,7 +114,7 @@ export default function App() {
       })
       .then((data: Notebook[]) => {
         if (isMounted && Array.isArray(data) && data.length > 0) {
-          setNotebooks(data);
+          setBaseNotebooks(data);
           setIsLoadingData(false);
         }
       })
@@ -121,11 +132,10 @@ export default function App() {
   // When Admin adds, updates, or deletes hubs or books, ALL visitors receive the change live!
   useEffect(() => {
     const unsubscribe = subscribeToGlobalCatalog(
-      (cloudNotebooks) => {
-        if (cloudNotebooks && cloudNotebooks.length > 0) {
-          setNotebooks(cloudNotebooks);
+      (receivedCloudNotebooks) => {
+        if (receivedCloudNotebooks) {
+          setCloudNotebooks(receivedCloudNotebooks);
           setIsLiveCatalogActive(true);
-          setIsLoadingData(false);
         }
       },
       (err) => {
@@ -184,13 +194,9 @@ export default function App() {
         return merged;
       });
 
-      // Merge custom notebooks into main catalog
+      // Update user custom notebooks so they merge into catalog seamlessly
       if (cloudCustomNbs.length > 0) {
-        setNotebooks((prev) => {
-          const existingIds = new Set(prev.map((n) => n.id));
-          const toAdd = cloudCustomNbs.filter((n) => !existingIds.has(n.id));
-          return [...toAdd, ...prev];
-        });
+        setUserCustomNotebooks(cloudCustomNbs);
       }
 
       setIsCloudSyncing(false);
@@ -251,14 +257,16 @@ export default function App() {
   };
 
   const handleAddNotebook = (newNb: Notebook) => {
-    setNotebooks((prev) => [newNb, ...prev]);
-    if (user) {
+    setUserCustomNotebooks((prev) => [newNb, ...prev]);
+    if (isAdmin) {
+      saveGlobalNotebook(newNb, user?.uid || 'admin').catch(console.warn);
+    } else if (user) {
       syncCustomNotebookToCloud(user.uid, newNb).catch(console.warn);
     }
   };
 
   const handleImportNotebooks = (newNbs: Notebook[]) => {
-    setNotebooks(newNbs);
+    setBaseNotebooks(newNbs);
   };
 
   // Compute stats

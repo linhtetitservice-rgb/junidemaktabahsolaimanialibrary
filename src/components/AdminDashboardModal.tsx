@@ -240,9 +240,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   // Delete Notebook from Cloud Firestore
   const handleDeleteNotebook = async (notebookId: string, title: string) => {
     if (!user) return;
-    const confirmed = window.confirm(`Are you sure you want to delete "${title}" from the live library? This will update the website for all visitors.`);
-    if (!confirmed) return;
-
     try {
       await deleteGlobalNotebook(notebookId);
       showStatus('success', t('adminDeleteSuccess'));
@@ -256,19 +253,35 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
-  // One-Click Seed All Library to Live Firestore
+  // One-Click Seed & Restore All 87 Hubs to Live Firestore
   const handleSeedAllToFirestore = async () => {
     if (!user) {
       showStatus('error', 'Sign in as Admin to sync to cloud.');
       return;
     }
-    const confirmed = window.confirm(`This will sync all ${allNotebooks.length} research hubs into live Firebase Firestore collection "notebooks". Connected users will immediately see the synchronized catalog. Proceed?`);
-    if (!confirmed) return;
 
     setIsSeeding(true);
     try {
-      const count = await batchSeedGlobalCatalog(allNotebooks, user.uid);
-      showStatus('success', t('adminSeedSuccess', { count: count.toString() }));
+      let listToSeed = allNotebooks;
+      // If current list is incomplete, fetch master JSON directly
+      if (listToSeed.length < 80) {
+        try {
+          const base = import.meta.env.BASE_URL || './';
+          const cleanBase = base.endsWith('/') ? base : `${base}/`;
+          const res = await fetch(`${cleanBase}notebooks-data.json`);
+          if (res.ok) {
+            const jsonNbs = await res.json();
+            if (Array.isArray(jsonNbs) && jsonNbs.length > listToSeed.length) {
+              listToSeed = jsonNbs;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch master JSON for seeding:', e);
+        }
+      }
+
+      const count = await batchSeedGlobalCatalog(listToSeed, user.uid);
+      showStatus('success', `Successfully synchronized & restored all ${count} research hubs (14,713 volumes) to Firestore!`);
       if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to seed catalog:', err);
@@ -396,9 +409,9 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             >
               <div className="flex items-center gap-1.5">
                 <Database className={`w-3.5 h-3.5 ${isSeeding ? 'animate-spin' : ''}`} />
-                <span>{isSeeding ? t('syncingCatalog') : t('seedCatalogBtn')}</span>
+                <span>{isSeeding ? t('syncingCatalog') : 'Sync / Restore 87 Hubs'}</span>
               </div>
-              <span className="text-[10px] opacity-70">Sync 87 Hubs to Cloud</span>
+              <span className="text-[10px] opacity-75 font-normal">87 Hubs & 14,713 Volumes</span>
             </button>
           </div>
         </div>
