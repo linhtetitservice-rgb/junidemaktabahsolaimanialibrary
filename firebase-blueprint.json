@@ -8,7 +8,7 @@
         "uid": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Unique user ID from Firebase Authentication"
         },
         "email": {
@@ -57,13 +57,13 @@
         "id": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Notebook ID"
         },
         "userId": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "UID of owner user"
         },
         "title": {
@@ -112,7 +112,7 @@
         "userId": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "UID of owner user"
         },
         "bookTitle": {
@@ -177,13 +177,13 @@
         "id": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Custom notebook unique ID"
         },
         "userId": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "UID of owner user"
         },
         "icon": {
@@ -236,7 +236,7 @@
         "id": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "Notebook identifier"
         },
         "icon": {
@@ -317,7 +317,7 @@
         "uid": {
           "type": "string",
           "maxLength": 128,
-          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "pattern": "^[a-zA-Z0-9_-]+$",
           "description": "User UID"
         },
         "email": {

@@ -165,27 +165,42 @@ export async function syncUserProfile(user: User, preferences?: { language?: str
 
 // 6. Favorites Cloud Sync
 export async function syncFavoriteToCloud(userId: string, notebook: Notebook): Promise<void> {
-  const path = `users/${userId}/favorites/${notebook.id}`;
+  const safeId = (notebook.id || `nb-${Date.now()}`).trim().slice(0, 128);
+  const path = `users/${userId}/favorites/${safeId}`;
   try {
-    const favRef = doc(db, 'users', userId, 'favorites', notebook.id);
-    await setDoc(favRef, {
-      id: notebook.id,
+    const favRef = doc(db, 'users', userId, 'favorites', safeId);
+    const payload: {
+      id: string;
+      userId: string;
+      title: string;
+      cat: string;
+      icon: string;
+      link: string;
+      shamelaLink?: string;
+      savedAt: string;
+    } = {
+      id: safeId,
       userId,
-      title: notebook.title,
-      cat: notebook.cat || 'Islamic Fiqh',
-      icon: notebook.icon || '📖',
-      link: notebook.link || '',
+      title: (notebook.title || 'Untitled Hub').trim().slice(0, 512),
+      cat: (notebook.cat || 'Islamic Fiqh').trim().slice(0, 256),
+      icon: (notebook.icon || '📖').trim().slice(0, 32),
+      link: (notebook.link || '').trim().slice(0, 2048),
       savedAt: new Date().toISOString(),
-    });
+    };
+    if (notebook.shamelaLink && notebook.shamelaLink.trim()) {
+      payload.shamelaLink = notebook.shamelaLink.trim().slice(0, 2048);
+    }
+    await setDoc(favRef, payload, { merge: true });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
 }
 
 export async function removeFavoriteFromCloud(userId: string, notebookId: string): Promise<void> {
-  const path = `users/${userId}/favorites/${notebookId}`;
+  const safeId = (notebookId || '').trim().slice(0, 128);
+  const path = `users/${userId}/favorites/${safeId}`;
   try {
-    const favRef = doc(db, 'users', userId, 'favorites', notebookId);
+    const favRef = doc(db, 'users', userId, 'favorites', safeId);
     await deleteDoc(favRef);
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, path);
@@ -206,6 +221,7 @@ export async function fetchFavoritesFromCloud(userId: string): Promise<Notebook[
         cat: data.cat || 'Islamic Fiqh',
         icon: data.icon || '📖',
         link: data.link || '',
+        shamelaLink: data.shamelaLink || undefined,
       });
     });
     return list;
@@ -217,25 +233,29 @@ export async function fetchFavoritesFromCloud(userId: string): Promise<Notebook[
 // 7. Reading Progress Cloud Sync
 export async function syncReadingProgressToCloud(userId: string, progress: BookProgress): Promise<void> {
   // Sanitize doc ID for firestore
-  const safeId = progress.id.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  const safeId = progress.id.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
   const path = `users/${userId}/readingProgress/${safeId}`;
   try {
     const docRef = doc(db, 'users', userId, 'readingProgress', safeId);
-    await setDoc(docRef, {
-      id: progress.id,
+    const payload: Record<string, any> = {
+      id: progress.id.slice(0, 256),
       userId,
-      bookTitle: progress.bookTitle,
-      author: progress.author || '',
-      notebookId: progress.notebookId || '',
-      notebookTitle: progress.notebookTitle || '',
+      bookTitle: (progress.bookTitle || 'Untitled Book').trim().slice(0, 512),
+      author: (progress.author || '').trim().slice(0, 256),
+      notebookId: (progress.notebookId || '').trim().slice(0, 128),
+      notebookTitle: (progress.notebookTitle || '').trim().slice(0, 512),
       status: progress.status,
-      currentVolume: progress.currentVolume || 1,
-      totalVolumes: progress.totalVolumes || 1,
-      timeSpentSeconds: progress.timeSpentSeconds || 0,
-      notes: progress.notes || '',
-      lastViewedAt: progress.lastViewedAt,
+      currentVolume: typeof progress.currentVolume === 'number' ? progress.currentVolume : 1,
+      totalVolumes: typeof progress.totalVolumes === 'number' ? progress.totalVolumes : 1,
+      timeSpentSeconds: typeof progress.timeSpentSeconds === 'number' ? progress.timeSpentSeconds : 0,
+      notes: (progress.notes || '').slice(0, 8192),
+      lastViewedAt: typeof progress.lastViewedAt === 'number' ? progress.lastViewedAt : Date.now(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+    if (progress.shamelaLink && progress.shamelaLink.trim()) {
+      payload.shamelaLink = progress.shamelaLink.trim().slice(0, 2048);
+    }
+    await setDoc(docRef, payload, { merge: true });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -260,6 +280,7 @@ export async function fetchReadingProgressFromCloud(userId: string): Promise<Boo
         totalVolumes: d.totalVolumes,
         timeSpentSeconds: d.timeSpentSeconds,
         notes: d.notes,
+        shamelaLink: d.shamelaLink,
         lastViewedAt: d.lastViewedAt,
       });
     });
@@ -271,21 +292,25 @@ export async function fetchReadingProgressFromCloud(userId: string): Promise<Boo
 
 // 8. Custom Notebooks Cloud Sync
 export async function syncCustomNotebookToCloud(userId: string, notebook: Notebook): Promise<void> {
-  const safeId = notebook.id.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  const safeId = (notebook.id || `nb-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
   const path = `users/${userId}/customNotebooks/${safeId}`;
   try {
     const docRef = doc(db, 'users', userId, 'customNotebooks', safeId);
-    await setDoc(docRef, {
-      id: notebook.id,
+    const payload: Record<string, any> = {
+      id: safeId,
       userId,
-      icon: notebook.icon || '📖',
-      title: notebook.title,
-      cat: notebook.cat,
-      link: notebook.link,
-      desc: notebook.desc || '',
+      icon: (notebook.icon || '📖').trim().slice(0, 32),
+      title: (notebook.title || 'Untitled Hub').trim().slice(0, 512),
+      cat: (notebook.cat || 'Islamic Fiqh').trim().slice(0, 256),
+      link: (notebook.link || '').trim().slice(0, 2048),
+      desc: (notebook.desc || '').trim().slice(0, 2048),
       booksCount: (notebook.books || []).length,
       createdAt: new Date().toISOString(),
-    });
+    };
+    if (notebook.shamelaLink && notebook.shamelaLink.trim()) {
+      payload.shamelaLink = notebook.shamelaLink.trim().slice(0, 2048);
+    }
+    await setDoc(docRef, payload, { merge: true });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
   }
@@ -397,21 +422,21 @@ export async function fetchGlobalCatalog(): Promise<Notebook[]> {
 }
 
 export async function saveGlobalNotebook(notebook: Notebook, adminUid: string): Promise<void> {
-  const safeId = notebook.id.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  const safeId = (notebook.id || `nb-${Date.now()}`).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
   const path = `notebooks/${safeId}`;
   try {
     const docRef = doc(db, 'notebooks', safeId);
     await setDoc(docRef, {
       id: safeId,
-      icon: notebook.icon || '📖',
-      title: notebook.title,
-      titleLang: notebook.titleLang || 'ar',
-      cat: notebook.cat,
-      libTitle: notebook.libTitle || '',
-      desc: notebook.desc || '',
-      fullDesc: notebook.fullDesc || '',
-      link: notebook.link,
-      shamelaLink: notebook.shamelaLink || '',
+      icon: (notebook.icon || '📖').trim().slice(0, 32),
+      title: (notebook.title || 'Untitled Hub').trim().slice(0, 512),
+      titleLang: (notebook.titleLang || 'ar').trim().slice(0, 16),
+      cat: (notebook.cat || 'Islamic Fiqh').trim().slice(0, 256),
+      libTitle: (notebook.libTitle || '').trim().slice(0, 512),
+      desc: (notebook.desc || '').trim().slice(0, 4096),
+      fullDesc: (notebook.fullDesc || '').trim().slice(0, 8192),
+      link: (notebook.link || '').trim().slice(0, 2048),
+      shamelaLink: (notebook.shamelaLink || '').trim().slice(0, 2048),
       books: notebook.books || [],
       keywords: notebook.keywords || [],
       totalSources: (notebook.books || []).length,
@@ -426,7 +451,7 @@ export async function saveGlobalNotebook(notebook: Notebook, adminUid: string): 
 }
 
 export async function deleteGlobalNotebook(notebookId: string): Promise<void> {
-  const safeId = notebookId.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  const safeId = notebookId.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
   const path = `notebooks/${safeId}`;
   try {
     const docRef = doc(db, 'notebooks', safeId);
@@ -454,19 +479,19 @@ export async function batchSeedGlobalCatalog(
     const chunk = notebooksList.slice(i, i + chunkSize);
     const batch = writeBatch(db);
     chunk.forEach((nb, index) => {
-      const safeId = nb.id.replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const safeId = (nb.id || `nb-${Date.now()}-${index}`).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
       const docRef = doc(db, 'notebooks', safeId);
       batch.set(docRef, {
         id: safeId,
-        icon: nb.icon || '📖',
-        title: nb.title,
-        titleLang: nb.titleLang || 'ar',
-        cat: nb.cat,
-        libTitle: nb.libTitle || '',
-        desc: nb.desc || '',
-        fullDesc: nb.fullDesc || '',
-        link: nb.link,
-        shamelaLink: nb.shamelaLink || '',
+        icon: (nb.icon || '📖').trim().slice(0, 32),
+        title: (nb.title || 'Untitled Hub').trim().slice(0, 512),
+        titleLang: (nb.titleLang || 'ar').trim().slice(0, 16),
+        cat: (nb.cat || 'Islamic Fiqh').trim().slice(0, 256),
+        libTitle: (nb.libTitle || '').trim().slice(0, 512),
+        desc: (nb.desc || '').trim().slice(0, 4096),
+        fullDesc: (nb.fullDesc || '').trim().slice(0, 8192),
+        link: (nb.link || '').trim().slice(0, 2048),
+        shamelaLink: (nb.shamelaLink || '').trim().slice(0, 2048),
         books: nb.books || [],
         keywords: nb.keywords || [],
         totalSources: (nb.books || []).length,

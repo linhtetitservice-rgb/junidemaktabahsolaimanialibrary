@@ -9,8 +9,9 @@ service cloud.firestore {
     }
 
     // 2. Global Validation Helpers
+    // Canonical RE2 character class with '-' at the end for safe, error-free matching
     function isValidId(id) {
-      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
     }
 
     function incoming() {
@@ -55,11 +56,12 @@ service cloud.firestore {
              data.keys().hasOnly(['id', 'userId', 'title', 'cat', 'icon', 'link', 'shamelaLink', 'savedAt']) &&
              data.id is string && isValidId(data.id) &&
              data.userId == userId &&
-             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
-             (!('cat' in data) || (data.cat is string && data.cat.size() <= 128)) &&
-             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
-             (!('link' in data) || (data.link is string && data.link.size() <= 1024)) &&
-             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024));
+             data.title is string && data.title.size() > 0 && data.title.size() <= 512 &&
+             (!('cat' in data) || (data.cat is string && data.cat.size() <= 256)) &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 32)) &&
+             (!('link' in data) || (data.link is string && data.link.size() <= 2048)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 2048)) &&
+             data.savedAt is string && data.savedAt.size() <= 64;
     }
 
     function isValidReadingProgress(data, userId) {
@@ -67,17 +69,17 @@ service cloud.firestore {
              data.keys().hasOnly(['id', 'userId', 'bookTitle', 'author', 'notebookId', 'notebookTitle', 'status', 'currentVolume', 'totalVolumes', 'timeSpentSeconds', 'notes', 'shamelaLink', 'lastViewedAt', 'updatedAt']) &&
              data.id is string && data.id.size() > 0 && data.id.size() <= 256 &&
              data.userId == userId &&
-             data.bookTitle is string && data.bookTitle.size() > 0 && data.bookTitle.size() <= 256 &&
+             data.bookTitle is string && data.bookTitle.size() > 0 && data.bookTitle.size() <= 512 &&
              data.status in ['want_to_read', 'reading', 'completed'] &&
              data.lastViewedAt is number &&
-             (!('author' in data) || (data.author is string && data.author.size() <= 128)) &&
+             (!('author' in data) || (data.author is string && data.author.size() <= 256)) &&
              (!('notebookId' in data) || (data.notebookId is string && data.notebookId.size() <= 128)) &&
-             (!('notebookTitle' in data) || (data.notebookTitle is string && data.notebookTitle.size() <= 256)) &&
+             (!('notebookTitle' in data) || (data.notebookTitle is string && data.notebookTitle.size() <= 512)) &&
              (!('currentVolume' in data) || data.currentVolume is number) &&
              (!('totalVolumes' in data) || data.totalVolumes is number) &&
              (!('timeSpentSeconds' in data) || data.timeSpentSeconds is number) &&
-             (!('notes' in data) || (data.notes is string && data.notes.size() <= 4096)) &&
-             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024));
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 8192)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 2048));
     }
 
     function isValidCustomNotebook(data, userId) {
@@ -85,27 +87,28 @@ service cloud.firestore {
              data.keys().hasOnly(['id', 'userId', 'title', 'link', 'cat', 'icon', 'desc', 'booksCount', 'shamelaLink', 'createdAt']) &&
              data.id is string && isValidId(data.id) &&
              data.userId == userId &&
-             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
-             data.link is string && data.link.size() > 0 && data.link.size() <= 1024 &&
-             data.cat is string && data.cat.size() <= 128 &&
-             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
-             (!('desc' in data) || (data.desc is string && data.desc.size() <= 1024)) &&
-             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024)) &&
-             (!('booksCount' in data) || data.booksCount is number);
+             data.title is string && data.title.size() > 0 && data.title.size() <= 512 &&
+             data.link is string && data.link.size() > 0 && data.link.size() <= 2048 &&
+             data.cat is string && data.cat.size() <= 256 &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 32)) &&
+             (!('desc' in data) || (data.desc is string && data.desc.size() <= 2048)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 2048)) &&
+             (!('booksCount' in data) || data.booksCount is number) &&
+             data.createdAt is string && data.createdAt.size() <= 64;
     }
 
     function isValidCatalogNotebook(data) {
       return data.keys().hasAll(['id', 'title', 'link', 'cat']) &&
              data.id is string && isValidId(data.id) &&
-             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
-             data.link is string && data.link.size() > 0 && data.link.size() <= 1024 &&
-             data.cat is string && data.cat.size() <= 128 &&
-             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
-             (!('titleLang' in data) || (data.titleLang is string && data.titleLang.size() <= 8)) &&
-             (!('libTitle' in data) || (data.libTitle is string && data.libTitle.size() <= 256)) &&
-             (!('desc' in data) || (data.desc is string && data.desc.size() <= 2048)) &&
-             (!('fullDesc' in data) || (data.fullDesc is string && data.fullDesc.size() <= 4096)) &&
-             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024)) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 512 &&
+             data.link is string && data.link.size() > 0 && data.link.size() <= 2048 &&
+             data.cat is string && data.cat.size() <= 256 &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 32)) &&
+             (!('titleLang' in data) || (data.titleLang is string && data.titleLang.size() <= 16)) &&
+             (!('libTitle' in data) || (data.libTitle is string && data.libTitle.size() <= 512)) &&
+             (!('desc' in data) || (data.desc is string && data.desc.size() <= 4096)) &&
+             (!('fullDesc' in data) || (data.fullDesc is string && data.fullDesc.size() <= 8192)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 2048)) &&
              (!('order' in data) || data.order is number) &&
              (!('totalSources' in data) || data.totalSources is number) &&
              (!('visible' in data) || data.visible is bool) &&
@@ -140,7 +143,7 @@ service cloud.firestore {
       match /favorites/{notebookId} {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && isValidId(notebookId) && isValidUserFavorite(incoming(), userId);
-        allow update: if isOwner(userId) && isValidId(notebookId) && isValidUserFavorite(incoming(), userId) && incoming().userId == existing().userId && incoming().savedAt == existing().savedAt;
+        allow update: if isOwner(userId) && isValidId(notebookId) && isValidUserFavorite(incoming(), userId) && incoming().userId == existing().userId && incoming().id == existing().id;
         allow delete: if isOwner(userId) && isValidId(notebookId);
       }
 
@@ -148,7 +151,7 @@ service cloud.firestore {
       match /readingProgress/{progressId} {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && isValidReadingProgress(incoming(), userId);
-        allow update: if isOwner(userId) && isValidReadingProgress(incoming(), userId) && incoming().userId == existing().userId && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'currentVolume', 'totalVolumes', 'timeSpentSeconds', 'notes', 'shamelaLink', 'lastViewedAt', 'updatedAt']);
+        allow update: if isOwner(userId) && isValidReadingProgress(incoming(), userId) && incoming().userId == existing().userId && incoming().id == existing().id;
         allow delete: if isOwner(userId);
       }
 
@@ -156,7 +159,7 @@ service cloud.firestore {
       match /customNotebooks/{notebookId} {
         allow read: if isOwner(userId);
         allow create: if isOwner(userId) && isValidId(notebookId) && isValidCustomNotebook(incoming(), userId);
-        allow update: if isOwner(userId) && isValidId(notebookId) && isValidCustomNotebook(incoming(), userId) && incoming().userId == existing().userId && incoming().createdAt == existing().createdAt;
+        allow update: if isOwner(userId) && isValidId(notebookId) && isValidCustomNotebook(incoming(), userId) && incoming().userId == existing().userId && incoming().id == existing().id;
         allow delete: if isOwner(userId) && isValidId(notebookId);
       }
     }
