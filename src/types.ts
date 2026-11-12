@@ -11,6 +11,7 @@ export interface Book {
   folder?: string;
   type?: string;
   lang?: string;
+  shamelaLink?: string;
 }
 
 export type ReadingStatus = 'want_to_read' | 'reading' | 'completed';
@@ -28,6 +29,7 @@ export interface BookProgress {
   notebookIcon?: string;
   notebookCat?: string;
   notebookLink?: string;
+  shamelaLink?: string;
   status: ReadingStatus;
   currentVolume?: number;
   totalVolumes?: number;
@@ -46,6 +48,7 @@ export interface Notebook {
   desc?: string;
   fullDesc?: string;
   link: string;
+  shamelaLink?: string;
   meta?: Record<string, any>;
   keywords?: string[];
   sources?: {
@@ -56,7 +59,7 @@ export interface Notebook {
   totalSources?: number;
   order?: number;
   visible?: boolean;
-  added?: string;
+  added?: string | number;
 }
 
 export interface ThemeConfig {

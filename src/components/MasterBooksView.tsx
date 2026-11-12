@@ -25,6 +25,7 @@ interface FlattenedBook extends Book {
   notebookIcon: string;
   notebookCat: string;
   notebookLink: string;
+  notebookShamelaLink?: string;
 }
 
 export const MasterBooksView: React.FC<MasterBooksViewProps> = ({
@@ -51,7 +52,8 @@ export const MasterBooksView: React.FC<MasterBooksViewProps> = ({
           notebookTitle: nb.title,
           notebookIcon: nb.icon || '📚',
           notebookCat: nb.cat,
-          notebookLink: nb.link
+          notebookLink: nb.link,
+          notebookShamelaLink: nb.shamelaLink
         });
       });
     });
@@ -257,11 +259,29 @@ export const MasterBooksView: React.FC<MasterBooksViewProps> = ({
                         >
                           {book.title}
                         </div>
-                        {book.publisher && (
-                          <div className="text-[11px] mt-0.5" style={{ color: currentTheme.textMuted }}>
-                            {book.publisher} {book.volumes ? `• ${book.volumes} Vol.` : ''}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                          {book.publisher && (
+                            <span className="text-[11px]" style={{ color: currentTheme.textMuted }}>
+                              {book.publisher} {book.volumes ? `• ${book.volumes} Vol.` : ''}
+                            </span>
+                          )}
+                          {(book.shamelaLink || book.notebookShamelaLink) && (
+                            <a
+                              href={book.shamelaLink || book.notebookShamelaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.2 rounded font-arabic font-semibold border text-emerald-600 hover:underline"
+                              style={{ 
+                                backgroundColor: 'rgba(5, 150, 105, 0.08)', 
+                                borderColor: 'rgba(5, 150, 105, 0.25)' 
+                              }}
+                              title={book.shamelaLink || book.notebookShamelaLink}
+                            >
+                              <span>الشاملة</span>
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </a>
+                          )}
+                        </div>
                       </td>
 
                       <td className="py-3 px-4">
@@ -308,6 +328,24 @@ export const MasterBooksView: React.FC<MasterBooksViewProps> = ({
 
                       <td className="py-3 px-4 text-end">
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* Shamela link button if present */}
+                          {(book.shamelaLink || book.notebookShamelaLink) && (
+                            <a
+                              href={book.shamelaLink || book.notebookShamelaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg border flex items-center justify-center text-xs transition-opacity hover:opacity-85 font-arabic font-bold"
+                              style={{ 
+                                backgroundColor: currentTheme.surfaceSecondary,
+                                borderColor: '#059669',
+                                color: '#059669' 
+                              }}
+                              title={book.shamelaLink ? `Open volume in Shamela: ${book.shamelaLink}` : `Open Hub in Shamela`}
+                            >
+                              <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                            </a>
+                          )}
+
                           <button
                             onClick={() => handleCopyBook(book.title)}
                             className="p-1.5 rounded-lg border transition-colors cursor-pointer"

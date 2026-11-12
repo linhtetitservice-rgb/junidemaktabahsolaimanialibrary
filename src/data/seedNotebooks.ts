@@ -115,5 +115,50 @@ export const SEED_NOTEBOOKS: Notebook[] = [
       { title: "شرح معانی الآثار للطحاوی مع تعلیقات", author: "امام طحاوی", deathYear: "321 هـ", publisher: "مکتبہ رحمانیہ", volumes: "4", lang: "ur" },
       { title: "قطبی مع میر قطبی شرح شمسیہ", author: "قطب الدین رازی", deathYear: "766 هـ", publisher: "مکتبہ عثمانیہ", volumes: "1", lang: "ur" }
     ]
+  },
+  {
+    id: "msl-user-lw2olUJnaKYd",
+    icon: "⚖️",
+    title: "الفقه والبحوث الفقهية الذكية - 1 Islamic Fiqh & Smart Research - 1",
+    titleLang: "ar",
+    cat: "Islamic Fiqh",
+    libTitle: "مكتبة الفقه والبحوث الفقهية الذكية",
+    desc: "Specialized Google NotebookLM research knowledge base for Islamic Jurisprudence (Fiqh), legal questions, and classical references.",
+    fullDesc: "Comprehensive Google NotebookLM Islamic Fiqh hub providing AI-grounded source analysis, verification, cross-referencing, and synthesized rulings across jurisprudential texts.",
+    link: "https://notebooklm.link.google/lw2olUJnaKYd",
+    keywords: ["Fiqh", "Islamic Fiqh", "NotebookLM", "lw2olUJnaKYd", "b218ee27", "Sulaimaniyah", "Tahqeeq", "Maktaba"],
+    books: [
+      { title: "موسوعة الفقه والبحوث الفقهية الرقمية", author: "نخبة من الفقهاء والباحثين", deathYear: "معاصر", publisher: "Google NotebookLM Fiqh Collection", volumes: "1", lang: "ar" }
+    ]
+  },
+  {
+    id: "msl-user-b61d82a8",
+    icon: "⚖️",
+    title: "الفقه والبحوث الفقهية الذكية - 2 Islamic Fiqh & Smart Research - 2",
+    titleLang: "ar",
+    cat: "Islamic Fiqh",
+    libTitle: "مكتبة الدراسات والبحوث الفقهية",
+    desc: "Specialized Google NotebookLM research knowledge base for Islamic Fiqh treatises, rulings, and comparative jurisprudential studies.",
+    fullDesc: "Integrated Google NotebookLM hub for automated scholarly synthesis, source grounding, and thematic research across primary Islamic jurisprudence sources.",
+    link: "https://notebook.google.com/notebook/b61d82a8-ca2e-419d-af6c-8bbe5e3fb2b7",
+    keywords: ["Fiqh", "Islamic Fiqh", "NotebookLM", "b61d82a8", "Sulaimaniyah", "Tahqeeq", "Maktaba"],
+    books: [
+      { title: "المكتبة الفقهية المتخصصة - بحوث ونصوص فقهية", author: "نخبة من العلماء والفقهاء", deathYear: "معاصر", publisher: "Google NotebookLM Fiqh Collection", volumes: "1", lang: "ar" }
+    ]
+  },
+  {
+    id: "msl-user-Jw9INLsWbTTX",
+    icon: "⚖️",
+    title: "الفقه والبحوث الفقهية الذكية - 3 Islamic Fiqh & Smart Research - 3",
+    titleLang: "ar",
+    cat: "Islamic Fiqh",
+    libTitle: "مكتبة المسائل والنوازل الفقهية",
+    desc: "Specialized Google NotebookLM research knowledge base for Islamic Fiqh rulings, fatwas, and contemporary legal inquiries.",
+    fullDesc: "Interactive Google NotebookLM hub for automated scholarly synthesis, fatwa cross-referencing, and thematic study of Islamic jurisprudential issues.",
+    link: "https://notebooklm.link.google/Jw9INLsWbTTX",
+    keywords: ["Fiqh", "Islamic Fiqh", "NotebookLM", "Jw9INLsWbTTX", "8fb2a4a1", "Sulaimaniyah", "Fatwa", "Tahqeeq", "Maktaba"],
+    books: [
+      { title: "موسوعة النوازل والمسائل الفقهية المعاصرة", author: "نخبة من الفقهاء والباحثين", deathYear: "معاصر", publisher: "Google NotebookLM Fiqh Collection", volumes: "1", lang: "ar" }
+    ]
   }
 ];

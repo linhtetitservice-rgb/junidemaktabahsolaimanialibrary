@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
 import { CategoryPills } from './components/CategoryPills';
@@ -10,10 +10,20 @@ import { DeveloperGuideModal } from './components/DeveloperGuideModal';
 import { AddNotebookModal } from './components/AddNotebookModal';
 import { RecentlyViewedSection } from './components/RecentlyViewedSection';
 import { CornerAIPortals } from './components/CornerAIPortals';
+import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { SEED_NOTEBOOKS } from './data/seedNotebooks';
 import { THEMES } from './theme/themes';
 import { Notebook, ThemeConfig, ViewMode, LanguageFilter } from './types';
 import { useLanguage } from './context/LanguageContext';
+import { useAuth } from './context/AuthContext';
+import { 
+  syncFavoriteToCloud, 
+  removeFavoriteFromCloud, 
+  fetchFavoritesFromCloud, 
+  syncCustomNotebookToCloud, 
+  fetchCustomNotebooksFromCloud,
+  subscribeToGlobalCatalog
+} from './services/firebase';
 import { 
   BookOpen, 
   Search, 
@@ -21,11 +31,16 @@ import {
   FolderTree, 
   SlidersHorizontal,
   ChevronDown,
-  Layers
+  Layers,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function App() {
   const { t, language, isRTL, dir } = useLanguage();
+  const { user, isAdmin, setIsCloudSyncing } = useAuth();
+  const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [isLiveCatalogActive, setIsLiveCatalogActive] = useState(false);
+  const hasAutoOpenedAdminRef = useRef(false);
 
   // Theme state persisted in localStorage
   const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(() => {
@@ -102,7 +117,91 @@ export default function App() {
     };
   }, []);
 
-  // Save theme & favorites to localStorage
+  // Real-time listener for Firestore global catalog (/notebooks)
+  // When Admin adds, updates, or deletes hubs or books, ALL visitors receive the change live!
+  useEffect(() => {
+    const unsubscribe = subscribeToGlobalCatalog(
+      (cloudNotebooks) => {
+        if (cloudNotebooks && cloudNotebooks.length > 0) {
+          setNotebooks(cloudNotebooks);
+          setIsLiveCatalogActive(true);
+          setIsLoadingData(false);
+        }
+      },
+      (err) => {
+        console.warn('Real-time global catalog sync listener:', err);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Auto-open Admin Dashboard when Admin logs in with linhtetitservice@gmail.com
+  useEffect(() => {
+    if (isAdmin && !hasAutoOpenedAdminRef.current) {
+      hasAutoOpenedAdminRef.current = true;
+      setIsAdminDashboardOpen(true);
+    }
+  }, [isAdmin]);
+
+  // Cloud sync when authenticated user changes
+  useEffect(() => {
+    if (!user) return;
+    let isMounted = true;
+    setIsCloudSyncing(true);
+
+    Promise.all([
+      fetchFavoritesFromCloud(user.uid).catch((e) => {
+        console.warn('Error fetching cloud favorites:', e);
+        return [];
+      }),
+      fetchCustomNotebooksFromCloud(user.uid).catch((e) => {
+        console.warn('Error fetching cloud custom notebooks:', e);
+        return [];
+      }),
+    ]).then(([cloudFavs, cloudCustomNbs]) => {
+      if (!isMounted) return;
+
+      // Merge favorites: combine local and cloud without duplicates
+      setFavorites((prevLocal) => {
+        const mergedMap = new Map<string, Notebook>();
+        prevLocal.forEach((nb) => mergedMap.set(nb.id, nb));
+        cloudFavs.forEach((nb) => mergedMap.set(nb.id, nb));
+        const merged = Array.from(mergedMap.values());
+        try {
+          localStorage.setItem('alturath_favorites', JSON.stringify(merged));
+        } catch (e) {
+          console.warn('Could not save merged favorites:', e);
+        }
+        // Upload any local favorites that were missing in cloud
+        prevLocal.forEach((localNb) => {
+          if (!cloudFavs.some((cf) => cf.id === localNb.id)) {
+            syncFavoriteToCloud(user.uid, localNb).catch(console.warn);
+          }
+        });
+        return merged;
+      });
+
+      // Merge custom notebooks into main catalog
+      if (cloudCustomNbs.length > 0) {
+        setNotebooks((prev) => {
+          const existingIds = new Set(prev.map((n) => n.id));
+          const toAdd = cloudCustomNbs.filter((n) => !existingIds.has(n.id));
+          return [...toAdd, ...prev];
+        });
+      }
+
+      setIsCloudSyncing(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
+  // Save theme & favorites to localStorage and cloud
   const handleThemeSelect = (theme: ThemeConfig) => {
     setCurrentTheme(theme);
     try {
@@ -118,8 +217,14 @@ export default function App() {
       let updated: Notebook[];
       if (exists) {
         updated = prev.filter((item) => item.id !== nb.id);
+        if (user) {
+          removeFavoriteFromCloud(user.uid, nb.id).catch(console.warn);
+        }
       } else {
         updated = [...prev, nb];
+        if (user) {
+          syncFavoriteToCloud(user.uid, nb).catch(console.warn);
+        }
       }
       try {
         localStorage.setItem('alturath_favorites', JSON.stringify(updated));
@@ -133,6 +238,9 @@ export default function App() {
   const handleRemoveFavorite = (nbId: string) => {
     setFavorites((prev) => {
       const updated = prev.filter((item) => item.id !== nbId);
+      if (user) {
+        removeFavoriteFromCloud(user.uid, nbId).catch(console.warn);
+      }
       try {
         localStorage.setItem('alturath_favorites', JSON.stringify(updated));
       } catch (e) {
@@ -144,6 +252,9 @@ export default function App() {
 
   const handleAddNotebook = (newNb: Notebook) => {
     setNotebooks((prev) => [newNb, ...prev]);
+    if (user) {
+      syncCustomNotebookToCloud(user.uid, newNb).catch(console.warn);
+    }
   };
 
   const handleImportNotebooks = (newNbs: Notebook[]) => {
@@ -216,6 +327,8 @@ export default function App() {
       const titleMatch = nb.title?.toLowerCase().includes(q);
       const catMatch = nb.cat?.toLowerCase().includes(q);
       const descMatch = nb.desc?.toLowerCase().includes(q);
+      const linkMatch = nb.link?.toLowerCase().includes(q);
+      const idMatch = nb.id?.toLowerCase().includes(q);
       const kwMatch = nb.keywords?.some((k) => k.toLowerCase().includes(q));
       const bookMatch = nb.books?.some(
         (b) =>
@@ -223,7 +336,7 @@ export default function App() {
           b.author?.toLowerCase().includes(q)
       );
 
-      return titleMatch || catMatch || descMatch || kwMatch || bookMatch;
+      return titleMatch || catMatch || descMatch || linkMatch || idMatch || kwMatch || bookMatch;
     }).sort((a, b) => {
       if (sortBy === 'title') {
         return (a.title || '').localeCompare(b.title || '');
@@ -267,9 +380,38 @@ export default function App() {
         onOpenFavorites={() => setIsFavoritesOpen(true)}
         onOpenGuide={() => setIsGuideOpen(true)}
         onOpenAddModal={() => setIsAddModalOpen(true)}
+        onOpenAdminDashboard={() => setIsAdminDashboardOpen(true)}
         totalNotebooks={notebooks.length}
         totalBooks={totalBooks}
       />
+
+      {/* Admin Mode Status Banner (Shows when signed in as linhtetitservice@gmail.com) */}
+      {isAdmin && (
+        <div 
+          id="admin-status-strip"
+          className="px-4 py-2 border-b flex items-center justify-between text-xs font-semibold shadow-xs transition-colors"
+          style={{ 
+            backgroundColor: 'rgba(124, 58, 237, 0.12)', 
+            borderColor: 'rgba(124, 58, 237, 0.3)',
+            color: '#8b5cf6' 
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-purple-500 animate-ping" />
+            <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span>{t('adminModeActive')}: <strong>{user?.email}</strong></span>
+            <span className="hidden sm:inline text-purple-400 font-normal">• Live Firestore Sync Active</span>
+          </div>
+          <button
+            id="open-admin-dashboard-strip-btn"
+            onClick={() => setIsAdminDashboardOpen(true)}
+            className="px-3 py-1 rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer text-xs"
+          >
+            <span>{t('adminDashboard')}</span>
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1">
@@ -607,6 +749,14 @@ export default function App() {
         onAddNotebook={handleAddNotebook}
         allNotebooks={notebooks}
         onImportNotebooks={handleImportNotebooks}
+      />
+
+      {/* Admin Dashboard Modal (Full Catalog Management & Live Firestore Broadcast) */}
+      <AdminDashboardModal
+        isOpen={isAdminDashboardOpen}
+        onClose={() => setIsAdminDashboardOpen(false)}
+        currentTheme={currentTheme}
+        allNotebooks={notebooks}
       />
 
       {/* Floating Corner AI Portals Widget: Al-Ikhlas Online AI & Darul Ifta AI Search */}

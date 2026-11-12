@@ -1,0 +1,368 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile document containing account metadata, display preferences, and timestamps.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique user ID from Firebase Authentication"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "User display name"
+        },
+        "photoURL": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Avatar photo URL"
+        },
+        "preferredLanguage": {
+          "type": "string",
+          "enum": ["ar", "ur", "en"],
+          "description": "Saved UI language code"
+        },
+        "preferredTheme": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Saved UI theme ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account registration timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last profile update timestamp"
+        }
+      },
+      "required": ["uid", "createdAt", "updatedAt"]
+    },
+    "UserFavorite": {
+      "title": "UserFavorite",
+      "description": "Saved notebook bookmark for a user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Notebook ID"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of owner user"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notebook title"
+        },
+        "cat": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Discipline category"
+        },
+        "icon": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Display emoji or icon"
+        },
+        "link": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "NotebookLM URL"
+        },
+        "shamelaLink": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Shamela library URL"
+        },
+        "savedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Bookmark creation timestamp"
+        }
+      },
+      "required": ["id", "userId", "title", "savedAt"]
+    },
+    "ReadingProgress": {
+      "title": "ReadingProgress",
+      "description": "Tracks user reading progress, active volume, and study notes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Unique reading progress ID"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of owner user"
+        },
+        "bookTitle": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Title of the volume"
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Author name"
+        },
+        "notebookId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Associated notebook ID"
+        },
+        "notebookTitle": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Associated notebook title"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["want_to_read", "reading", "completed"],
+          "description": "Current reading status"
+        },
+        "currentVolume": {
+          "type": "number",
+          "description": "Current volume number"
+        },
+        "totalVolumes": {
+          "type": "number",
+          "description": "Total volumes in work"
+        },
+        "timeSpentSeconds": {
+          "type": "number",
+          "description": "Total active reading time tracked in seconds"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 4096,
+          "description": "User personal research notes"
+        },
+        "lastViewedAt": {
+          "type": "number",
+          "description": "Last view timestamp in ms"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Firestore server update timestamp"
+        }
+      },
+      "required": ["id", "userId", "bookTitle", "status", "lastViewedAt"]
+    },
+    "CustomNotebook": {
+      "title": "CustomNotebook",
+      "description": "User-added custom NotebookLM research hub.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Custom notebook unique ID"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "UID of owner user"
+        },
+        "icon": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Icon or emoji"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notebook title"
+        },
+        "cat": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Discipline category"
+        },
+        "link": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Google NotebookLM link"
+        },
+        "shamelaLink": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Shamela library reference URL"
+        },
+        "desc": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Brief description"
+        },
+        "booksCount": {
+          "type": "number",
+          "description": "Number of books in notebook"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["id", "userId", "title", "link", "cat", "createdAt"]
+    },
+    "CatalogNotebook": {
+      "title": "CatalogNotebook",
+      "description": "Global shared NotebookLM knowledge base catalog managed by administrators.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Notebook identifier"
+        },
+        "icon": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Display emoji"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notebook title"
+        },
+        "titleLang": {
+          "type": "string",
+          "maxLength": 8,
+          "description": "Primary language code of title (ar, ur, en)"
+        },
+        "cat": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Discipline category"
+        },
+        "libTitle": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Arabic library collection title"
+        },
+        "desc": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "Short description"
+        },
+        "fullDesc": {
+          "type": "string",
+          "maxLength": 4096,
+          "description": "Complete description"
+        },
+        "link": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Google NotebookLM URL"
+        },
+        "shamelaLink": {
+          "type": "string",
+          "maxLength": 1024,
+          "description": "Shamela portal or volume URL"
+        },
+        "totalSources": {
+          "type": "number",
+          "description": "Total sources count"
+        },
+        "order": {
+          "type": "number",
+          "description": "Display sorting order"
+        },
+        "visible": {
+          "type": "boolean",
+          "description": "Visibility flag"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "updatedBy": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Admin UID who made the update"
+        }
+      },
+      "required": ["id", "title", "link", "cat"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Roster of verified administrators.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "User UID"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Admin email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "superadmin"],
+          "description": "Administrative role level"
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when admin access was granted"
+        }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "/notebooks/{notebookId}": {
+      "schema": "CatalogNotebook",
+      "description": "Global shared catalog of NotebookLM hubs and Islamic volumes managed by administrators."
+    },
+    "/admins/{adminId}": {
+      "schema": "AdminUser",
+      "description": "Roster of designated system administrators."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document containing preferences and account metadata."
+    },
+    "/users/{userId}/favorites/{notebookId}": {
+      "schema": "UserFavorite",
+      "description": "User saved notebook bookmarks."
+    },
+    "/users/{userId}/readingProgress/{progressId}": {
+      "schema": "ReadingProgress",
+      "description": "User tracked volume reading progress and notes."
+    },
+    "/users/{userId}/customNotebooks/{notebookId}": {
+      "schema": "CustomNotebook",
+      "description": "User created custom NotebookLM research hubs."
+    }
+  }
+}

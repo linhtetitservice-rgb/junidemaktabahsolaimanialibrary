@@ -186,22 +186,38 @@ export const NotebookCard: React.FC<NotebookCardProps> = ({
           </span>
         </button>
 
-        {/* Open in NotebookLM Button */}
-        <a
-          id={`open-notebooklm-${notebook.id}`}
-          href={notebook.link || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-white transition-all shadow-xs hover:opacity-90 active:scale-95"
-          style={{ backgroundColor: currentTheme.primary }}
-          title={t('openNotebookLM')}
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span className={language === 'ar' ? 'font-arabic' : language === 'ur' ? 'font-urdu' : ''}>
-            {t('openNotebookLM')}
-          </span>
-          <ExternalLink className="w-3.5 h-3.5 opacity-80" />
-        </a>
+        <div className="flex items-center gap-1.5 self-end sm:self-auto flex-wrap justify-end">
+          {notebook.shamelaLink && (
+            <a
+              id={`open-shamela-${notebook.id}`}
+              href={notebook.shamelaLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg flex items-center justify-center gap-1 text-teal-600 dark:text-teal-400 bg-teal-500/10 border border-teal-500/30 transition-all hover:bg-teal-500/20 active:scale-95"
+              title="Open in Al-Maktaba Al-Shamela"
+            >
+              <span className="font-arabic">الشاملة</span>
+              <ExternalLink className="w-3 h-3 opacity-80" />
+            </a>
+          )}
+
+          {/* Open in NotebookLM Button */}
+          <a
+            id={`open-notebooklm-${notebook.id}`}
+            href={notebook.link || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center justify-center gap-1.5 text-white transition-all shadow-xs hover:opacity-90 active:scale-95"
+            style={{ backgroundColor: currentTheme.primary }}
+            title={t('openNotebookLM')}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span className={language === 'ar' ? 'font-arabic' : language === 'ur' ? 'font-urdu' : ''}>
+              {t('openNotebookLM')}
+            </span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+          </a>
+        </div>
       </div>
     </div>
   );

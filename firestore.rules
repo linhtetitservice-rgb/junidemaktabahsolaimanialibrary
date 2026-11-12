@@ -1,0 +1,170 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Safety Net: Default-deny all unexpected access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Global Validation Helpers
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+             request.auth.token.email_verified == true &&
+             (
+               request.auth.token.email == 'linhtetitservice@gmail.com' ||
+               exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+             );
+    }
+
+    // 3. Entity Validation Helpers
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'createdAt', 'updatedAt']) &&
+             data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'preferredLanguage', 'preferredTheme', 'createdAt', 'updatedAt']) &&
+             data.uid is string && isValidId(data.uid) &&
+             (!('email' in data) || (data.email is string && data.email.size() <= 256)) &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 128)) &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1024)) &&
+             (!('preferredLanguage' in data) || data.preferredLanguage in ['ar', 'ur', 'en']) &&
+             (!('preferredTheme' in data) || (data.preferredTheme is string && data.preferredTheme.size() <= 64));
+    }
+
+    function isValidUserFavorite(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'savedAt']) &&
+             data.keys().hasOnly(['id', 'userId', 'title', 'cat', 'icon', 'link', 'shamelaLink', 'savedAt']) &&
+             data.id is string && isValidId(data.id) &&
+             data.userId == userId &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
+             (!('cat' in data) || (data.cat is string && data.cat.size() <= 128)) &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
+             (!('link' in data) || (data.link is string && data.link.size() <= 1024)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024));
+    }
+
+    function isValidReadingProgress(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'bookTitle', 'status', 'lastViewedAt']) &&
+             data.keys().hasOnly(['id', 'userId', 'bookTitle', 'author', 'notebookId', 'notebookTitle', 'status', 'currentVolume', 'totalVolumes', 'timeSpentSeconds', 'notes', 'shamelaLink', 'lastViewedAt', 'updatedAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 256 &&
+             data.userId == userId &&
+             data.bookTitle is string && data.bookTitle.size() > 0 && data.bookTitle.size() <= 256 &&
+             data.status in ['want_to_read', 'reading', 'completed'] &&
+             data.lastViewedAt is number &&
+             (!('author' in data) || (data.author is string && data.author.size() <= 128)) &&
+             (!('notebookId' in data) || (data.notebookId is string && data.notebookId.size() <= 128)) &&
+             (!('notebookTitle' in data) || (data.notebookTitle is string && data.notebookTitle.size() <= 256)) &&
+             (!('currentVolume' in data) || data.currentVolume is number) &&
+             (!('totalVolumes' in data) || data.totalVolumes is number) &&
+             (!('timeSpentSeconds' in data) || data.timeSpentSeconds is number) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 4096)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024));
+    }
+
+    function isValidCustomNotebook(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'link', 'cat', 'createdAt']) &&
+             data.keys().hasOnly(['id', 'userId', 'title', 'link', 'cat', 'icon', 'desc', 'booksCount', 'shamelaLink', 'createdAt']) &&
+             data.id is string && isValidId(data.id) &&
+             data.userId == userId &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
+             data.link is string && data.link.size() > 0 && data.link.size() <= 1024 &&
+             data.cat is string && data.cat.size() <= 128 &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
+             (!('desc' in data) || (data.desc is string && data.desc.size() <= 1024)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024)) &&
+             (!('booksCount' in data) || data.booksCount is number);
+    }
+
+    function isValidCatalogNotebook(data) {
+      return data.keys().hasAll(['id', 'title', 'link', 'cat']) &&
+             data.id is string && isValidId(data.id) &&
+             data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
+             data.link is string && data.link.size() > 0 && data.link.size() <= 1024 &&
+             data.cat is string && data.cat.size() <= 128 &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 16)) &&
+             (!('titleLang' in data) || (data.titleLang is string && data.titleLang.size() <= 8)) &&
+             (!('libTitle' in data) || (data.libTitle is string && data.libTitle.size() <= 256)) &&
+             (!('desc' in data) || (data.desc is string && data.desc.size() <= 2048)) &&
+             (!('fullDesc' in data) || (data.fullDesc is string && data.fullDesc.size() <= 4096)) &&
+             (!('shamelaLink' in data) || (data.shamelaLink is string && data.shamelaLink.size() <= 1024)) &&
+             (!('order' in data) || data.order is number) &&
+             (!('totalSources' in data) || data.totalSources is number) &&
+             (!('visible' in data) || data.visible is bool) &&
+             (!('books' in data) || data.books is list) &&
+             (!('keywords' in data) || data.keywords is list) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64)) &&
+             (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 128));
+    }
+
+    // 4. Global Shared Library Catalog (Managed by Admin, Read by Everyone)
+    match /notebooks/{notebookId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidId(notebookId) && isValidCatalogNotebook(incoming());
+      allow update: if isAdmin() && isValidId(notebookId) && isValidCatalogNotebook(incoming());
+      allow delete: if isAdmin() && isValidId(notebookId);
+    }
+
+    // 5. Admin Roster
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // 6. User Profiles & Isolated Sub-collections
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming()) && incoming().uid == userId;
+      allow update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(incoming()) && incoming().uid == existing().uid && incoming().createdAt == existing().createdAt && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'preferredLanguage', 'preferredTheme', 'updatedAt']);
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // User Favorites
+      match /favorites/{notebookId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(notebookId) && isValidUserFavorite(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(notebookId) && isValidUserFavorite(incoming(), userId) && incoming().userId == existing().userId && incoming().savedAt == existing().savedAt;
+        allow delete: if isOwner(userId) && isValidId(notebookId);
+      }
+
+      // Reading Progress
+      match /readingProgress/{progressId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidReadingProgress(incoming(), userId);
+        allow update: if isOwner(userId) && isValidReadingProgress(incoming(), userId) && incoming().userId == existing().userId && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'currentVolume', 'totalVolumes', 'timeSpentSeconds', 'notes', 'shamelaLink', 'lastViewedAt', 'updatedAt']);
+        allow delete: if isOwner(userId);
+      }
+
+      // Custom Notebooks
+      match /customNotebooks/{notebookId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(notebookId) && isValidCustomNotebook(incoming(), userId);
+        allow update: if isOwner(userId) && isValidId(notebookId) && isValidCustomNotebook(incoming(), userId) && incoming().userId == existing().userId && incoming().createdAt == existing().createdAt;
+        allow delete: if isOwner(userId) && isValidId(notebookId);
+      }
+    }
+
+    // Connection Healthcheck Document (readable to verify connectivity)
+    match /test/connection {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Plus, Download, Upload, Sparkles, Check } from 'lucide-react';
+import { X, Plus, Download, Upload, Sparkles, Check, Cloud } from 'lucide-react';
 import { Notebook, ThemeConfig } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface AddNotebookModalProps {
   isOpen: boolean;
@@ -23,9 +24,11 @@ export const AddNotebookModal: React.FC<AddNotebookModalProps> = ({
   if (!isOpen) return null;
 
   const { t, isRTL, dir } = useLanguage();
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [cat, setCat] = useState('Islamic Fiqh');
   const [link, setLink] = useState('');
+  const [shamelaLink, setShamelaLink] = useState('');
   const [icon, setIcon] = useState('📖');
   const [desc, setDesc] = useState('');
   const [rawBooks, setRawBooks] = useState('');
@@ -82,8 +85,9 @@ export const AddNotebookModal: React.FC<AddNotebookModalProps> = ({
       title: title.trim(),
       cat: cat.trim(),
       link: link.trim(),
+      shamelaLink: shamelaLink.trim() || undefined,
       desc: desc.trim(),
-      books: books.length > 0 ? books : [{ title: title.trim() }]
+      books: books.length > 0 ? books : [{ title: title.trim(), shamelaLink: shamelaLink.trim() || undefined }]
     };
 
     onAddNotebook(newNb);
@@ -118,11 +122,17 @@ export const AddNotebookModal: React.FC<AddNotebookModalProps> = ({
             borderColor: currentTheme.border 
           }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Sparkles className="w-5 h-5" style={{ color: currentTheme.accent }} />
             <h3 className="font-bold text-base sm:text-lg" style={{ color: currentTheme.text }}>
               {isRTL ? 'إضافة دفتر ذكي / استيراد وتصدير' : 'Add NotebookLM Hub / Export Data'}
             </h3>
+            {user && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1 text-emerald-500 bg-emerald-500/10 border border-emerald-500/20">
+                <Cloud className="w-3 h-3" />
+                <span>{t('cloudSyncActive')}</span>
+              </span>
+            )}
           </div>
 
           <button
@@ -249,6 +259,20 @@ export const AddNotebookModal: React.FC<AddNotebookModalProps> = ({
                 className="w-full px-3 py-2 rounded-lg border outline-hidden font-mono text-xs"
                 style={{ backgroundColor: currentTheme.surfaceSecondary, borderColor: currentTheme.border, color: currentTheme.text }}
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium mb-1" style={{ color: currentTheme.textMuted }}>
+                Shamela Link (Al-Maktaba Al-Shamela / المكتبة الشاملة) - Optional
+              </label>
+              <input
+                type="url"
+                placeholder="https://shamela.ws/book/... or https://shamela.ws/ai"
+                value={shamelaLink}
+                onChange={(e) => setShamelaLink(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border outline-hidden font-mono text-xs"
+                style={{ backgroundColor: currentTheme.surfaceSecondary, borderColor: currentTheme.border, color: currentTheme.text }}
               />
             </div>
 

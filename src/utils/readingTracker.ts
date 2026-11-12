@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Book, Notebook, BookProgress, ReadingStatus } from '../types';
+import { auth, syncReadingProgressToCloud, fetchReadingProgressFromCloud } from '../services/firebase';
 
 const STORAGE_KEY = 'maktaba_reading_progress';
 const LEGACY_STORAGE_KEY = 'alturath_reading_progress';
@@ -82,6 +83,9 @@ export function recordBookView(
 
   map[id] = updated;
   persistMap(map);
+  if (auth.currentUser) {
+    syncReadingProgressToCloud(auth.currentUser.uid, updated).catch(console.warn);
+  }
   return updated;
 }
 
@@ -124,6 +128,9 @@ export function updateBookStatus(
 
   map[id] = updated;
   persistMap(map);
+  if (auth.currentUser) {
+    syncReadingProgressToCloud(auth.currentUser.uid, updated).catch(console.warn);
+  }
   return updated;
 }
 
@@ -161,6 +168,28 @@ export function useReadingTracker() {
 
     window.addEventListener(UPDATE_EVENT, handleUpdate);
     window.addEventListener('storage', handleStorage);
+
+    // If signed into Firebase, fetch and merge cloud reading progress
+    if (auth.currentUser) {
+      fetchReadingProgressFromCloud(auth.currentUser.uid)
+        .then((cloudItems) => {
+          if (cloudItems.length > 0) {
+            const current = getReadingProgressMap();
+            let changed = false;
+            cloudItems.forEach((item) => {
+              if (!current[item.id] || (item.lastViewedAt > (current[item.id].lastViewedAt || 0))) {
+                current[item.id] = item;
+                changed = true;
+              }
+            });
+            if (changed) {
+              persistMap(current);
+              setProgressMap({ ...current });
+            }
+          }
+        })
+        .catch((err) => console.warn('Could not fetch cloud reading progress:', err));
+    }
 
     return () => {
       window.removeEventListener(UPDATE_EVENT, handleUpdate);

@@ -12,10 +12,12 @@ import {
   ChevronRight,
   Library,
   BookMarked,
-  Timer
+  Timer,
+  Cloud
 } from 'lucide-react';
 import { ThemeConfig, Notebook, ReadingStatus, BookProgress } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useReadingTracker } from '../utils/readingTracker';
 import { estimateReadingTime, formatTimerFriendly } from '../utils/readingTimer';
 
@@ -31,6 +33,7 @@ export const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
   onOpenNotebookBooks
 }) => {
   const { t, isRTL, dir } = useLanguage();
+  const { user } = useAuth();
   const { recentlyViewed, updateStatus, removeProgress, clearAll } = useReadingTracker();
   const [statusFilter, setStatusFilter] = useState<'all' | ReadingStatus>('all');
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -220,6 +223,16 @@ export const RecentlyViewedSection: React.FC<RecentlyViewedSectionProps> = ({
                 >
                   {recentlyViewed.length}
                 </span>
+                {user ? (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1 text-emerald-500 bg-emerald-500/10 border border-emerald-500/20">
+                    <Cloud className="w-3 h-3" />
+                    <span>{t('cloudSyncActive')}</span>
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-muted-foreground bg-black/5 border border-black/10 dark:bg-white/5 dark:border-white/10">
+                    {t('guestMode')}
+                  </span>
+                )}
               </div>
               <p className="text-xs mt-0.5" style={{ color: currentTheme.textMuted }}>
                 {t('recentlyViewedSubtitle')}

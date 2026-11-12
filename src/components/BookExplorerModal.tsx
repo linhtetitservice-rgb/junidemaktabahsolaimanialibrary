@@ -267,6 +267,27 @@ export const BookExplorerModal: React.FC<BookExplorerModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            {/* Shamela direct link if available */}
+            {notebook.shamelaLink && (
+              <a
+                id="modal-open-shamela-btn"
+                href={notebook.shamelaLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-opacity hover:opacity-90 border"
+                style={{ 
+                  backgroundColor: currentTheme.surface,
+                  borderColor: '#059669',
+                  color: '#059669'
+                }}
+                title={t('openShamela')}
+              >
+                <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="hidden sm:inline font-arabic">{t('openShamela')}</span>
+                <ExternalLink className="w-3 h-3 text-emerald-600" />
+              </a>
+            )}
+
             {/* Direct NotebookLM link */}
             <a
               id="modal-open-notebooklm-btn"
@@ -844,6 +865,25 @@ export const BookExplorerModal: React.FC<BookExplorerModalProps> = ({
                       >
                         <Timer className={`w-3.5 h-3.5 ${isTimerFocused ? 'text-blue-500' : ''}`} />
                       </button>
+
+                      {/* Shamela link button if book or notebook has shamelaLink */}
+                      {(book.shamelaLink || notebook.shamelaLink) && (
+                        <a
+                          id={`shamela-book-btn-${idx}`}
+                          href={book.shamelaLink || notebook.shamelaLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-lg border transition-colors cursor-pointer hover:opacity-90 flex items-center justify-center"
+                          style={{ 
+                            backgroundColor: currentTheme.surface,
+                            borderColor: currentTheme.border,
+                            color: '#059669' 
+                          }}
+                          title={book.shamelaLink ? `Open volume in Shamela: ${book.shamelaLink}` : `Open Hub in Shamela`}
+                        >
+                          <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+                        </a>
+                      )}
 
                       {/* Copy Title button */}
                       <button
